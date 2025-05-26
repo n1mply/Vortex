@@ -92,24 +92,24 @@
 .button-container {
     position: relative;
     width: 100%;
-    min-height: 40vh; /* Минимальная высота вместо фиксированной */  
+    min-height: 40vh;
     left: 0;       
-    right: 0;
+    top: 30vh;
     display: flex;
     justify-content: center;
-    align-items: flex-end; /* Кнопка будет в верхней части контейнера */
-    padding-top: 30vh; /* Отступ сверху для позиционирования кнопки */
+    align-items: flex-end;
+    padding-top: 30vh;
 }
 
 .button-container button{
-    position: static; /* Убираем абсолютное позиционирование */
+    position: static;
 }
 
 .queries{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 95%;
+    width: 105%;
     gap: 15px;
 }
 
@@ -122,17 +122,37 @@
 
 .queries .query p{
     margin: 0;
-    font-size: 16px;
-    font-weight: 400;
+    font-size: 12px;
+    font-weight: 450;
     color: #717171;
 }
 
-/* Простая версия без fade-эффекта */
 .step-content {
     opacity: 1;
 }
 
-/* Адаптивные стили для мобильных устройств */
+.logo-h  {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  padding: 20px;
+  scale: 0.8;
+  background-color: #A044FF;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    position: absolute;
+  }
+
+  .logo-h {
+    animation: rotateHurricane 1s cubic-bezier(0.25, 0.1, 0.25, 1.2) infinite;
+    transform-origin: center center;
+  }
+}
+
 @media (max-height: 800px) {
     .button-container {
         min-height: 20vh;
@@ -140,11 +160,11 @@
     }
     
     .logo-label .logo-container {
-        height: 120px; /* Уменьшаем высоту лого на маленьких экранах */
+        height: 120px;
     }
     
     .logo-label h1 {
-        font-size: 28px; /* Немного меньший размер заголовка */
+        font-size: 28px;
     }
 }
 
@@ -171,3 +191,5 @@
         gap: 10px; /* Уменьшаем отступы между критериями пароля */
     }
 }
+
+
