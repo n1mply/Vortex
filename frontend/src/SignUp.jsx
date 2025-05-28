@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { SignUpContext } from './SignUpContext';
+import api from './api';
 import Step1 from './steps/Step1';
 import Step2 from './steps/Step2';
 import Step3 from './steps/Step3';
 import './SignUp.css';
+import { useNavigate } from 'react-router-dom';
+import Loading from './Loading';
 
 export default function SignUp() {
+  const navigator = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     email: '',
@@ -32,9 +37,22 @@ export default function SignUp() {
     return newCriteria.every(c => c);
   };
 
-  const handleSubmit = () => {
-    console.log('Final submission:', formData);
-  };
+const handleSubmit = async () => {
+  try {
+    const responseUp = await api.post('/register', formData);
+    console.log('Success:', responseUp.data);
+    const responseIn = await api.post("/login", { username: formData.username, password: formData.password });
+    console.log(responseIn.data.message)
+    if (responseIn.data.message==="Success"){
+      setIsLoading(true)
+    }
+
+
+  } catch (error) {
+    console.error('Error:', error.response?.data || error.message);
+  }
+};
+
 
   const value = {
     step,
@@ -51,8 +69,12 @@ export default function SignUp() {
     typingTimeout, 
     setTypingTimeout
   };
+  if (isLoading===true){
+    return <Loading redirectTo={'/m'} immLoadTime={3}>Creating Your Account..</Loading>
+  }
 
   return (
+  <>
     <SignUpContext.Provider value={value}>
       <div className="signup-container">
         <div 
@@ -64,5 +86,7 @@ export default function SignUp() {
         </div>
       </div>
     </SignUpContext.Provider>
+  </>
+
   );
 }

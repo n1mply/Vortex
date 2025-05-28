@@ -1,15 +1,46 @@
-import hurricane from '/hurricane.svg'
-import vletter from '/v.svg'
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import hurricane from '/hurricane.svg';
+import vletter from '/v.svg';
 
-export default function Loading({children}){
+export default function Loading({ children, redirectTo, immLoadTime = 1 }) {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            navigate(redirectTo);
+        }, immLoadTime * 1000);
+
+        return () => clearTimeout(timer);
+    }, [navigate, redirectTo, immLoadTime]);
+
     return (
-        <div style={{display: 'flex', flexDirection: 'column'}}>
+        <div style={{ 
+            display: 'flex', 
+            alignItems: "center", 
+            flexDirection: 'column', 
+            height: "100vh", 
+            justifyContent: 'center',
+        }}>
             <div className="logo">
-                <img className='logo-h' src={hurricane} alt="h" />
-                <img src={vletter} alt="v" />
+                <img 
+                    className='logo-h' 
+                    src={hurricane} 
+                    alt="h"
+                />
+                <img 
+                    src={vletter} 
+                    alt="v" 
+                />
             </div>
-            <h1 style={{fontSize: '20px', color:'#fff', textAlign: 'center', fontWeight: 550}}>{children}</h1>
+            <h1 style={{
+                fontSize: '20px', 
+                color: '#fff', 
+                textAlign: 'center', 
+                fontWeight: 550,
+            }}>
+                {children}
+            </h1>
         </div>
-
-    )
+    );
 }
