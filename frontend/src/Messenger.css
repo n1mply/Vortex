@@ -3,10 +3,17 @@ header{
     justify-content: space-between;
     align-items: center;
     margin: 8px;
+    height: 51px;
     h1{
         color: #A044FF;
         font-size: 20px;
         user-select: none;
+        transition: opacity 0.3s ease;
+    }
+    .icon-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     .search-wrapper { 
         display: flex;
@@ -15,7 +22,8 @@ header{
         background-color: #151515;
         border-radius: 50px;
         padding: 0 10px;
-        max-width: 205px;
+        width: 50%;
+        transition: width 0.3s ease;
     }
     .search-wrapper input{
         height: 100%; 
@@ -25,6 +33,8 @@ header{
         padding-left: 5px; 
         padding-top: 5px;
         width: calc(100% - 25px); 
+        font-family: Roboto;
+        font-size: 16px;
     }
     .search-wrapper input::placeholder {
         color: rgb(255, 255, 255);
@@ -58,7 +68,9 @@ header{
     align-items: center;
     justify-content: center;
     width: 100%;
-    .chat{
+}
+
+.chat{
         transition: all 0.25s ease;
         p{
             margin: 0 ;
@@ -96,16 +108,7 @@ header{
                 width: 100%;
                 justify-content: space-between;
                 margin-bottom: 5px;
-                /* flex-wrap: nowrap; */ 
-                .username{
-                    font-size: 16px;
-                    color: #fff;
-                    font-weight: 550;
-                    white-space: nowrap; 
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    /* flex-shrink: 0; */ 
-                }
+                /* flex-wrap: nowrap; */
                 .date{
                     font-size: 14px;
                     color: #707579;
@@ -126,25 +129,49 @@ header{
             }
         }
     }
-    .chat:active{
-        transition: all 0.25s ease;
-        background-color: #A044FF;
-        .name-n-time{
-            .date{
-                color: #fff;
-            }
-        }
-        .last-message{
+
+
+.chat:active{
+    transition: all 0.25s ease;
+    background-color: #A044FF;
+    .name-n-time{
+        .date{
             color: #fff;
         }
     }
-
+    .last-message{
+        color: #fff;
+    }
 }
 
+.username{
+    font-size: 16px;
+    color: #fff;
+    font-weight: 550;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    /* flex-shrink: 0; */ 
+}
+
+.search-select{
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    background-color: #1E1E1E;
+    .chat{
+        width: 98%;
+        justify-content: left;
+    }
+}
 
 @media (hover: hover) {
     .chat:hover {
         transition: all 0.3s ease-in-out;
         background-color: #2C2C2C;
+        cursor: pointer;
     }
 }

@@ -1,0 +1,53 @@
+import { useState, useRef, useEffect } from "react";
+import send from './assets/icons/send.svg';
+import paperclip from './assets/icons/paperclip.svg';
+import sticker from './assets/icons/sticker.svg';
+import './ChatWindow.css';
+
+export default function ChatWindow() {
+    const [message, setMessage] = useState("");
+    const textareaRef = useRef(null);
+    const messageSendRef = useRef(null);
+
+    // Автоматическое увеличение высоты textarea при переносе строк
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = "auto";
+            textarea.style.height = `${textarea.scrollHeight}px`;
+            
+            // Обновляем высоту контейнера
+            if (messageSendRef.current) {
+                const newHeight = Math.min(Math.max(textarea.scrollHeight, 58), 200);
+                messageSendRef.current.style.height = `${newHeight}px`;
+            }
+        }
+    }, [message]);
+
+    return (
+        <div className="messenger-chat">
+            <div className="chat-messages"></div>
+
+            <div className="message-send" ref={messageSendRef}>
+                <div className="message-input">
+                    <div className="bottom-aligned">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#707579" viewBox="0 0 256 256"><path d="M174.92,156c-10.29,17.79-27.39,28-46.92,28s-36.63-10.2-46.93-28a8,8,0,1,1,13.86-8c7.46,12.91,19.2,20,33.07,20s25.61-7.1,33.08-20a8,8,0,1,1,13.84,8ZM232,128a104.35,104.35,0,0,1-4.56,30.56,8,8,0,0,1-2,3.31l-63.57,63.57a7.9,7.9,0,0,1-3.3,2A104,104,0,1,1,232,128Zm-16,0a87.89,87.89,0,1,0-64,84.69L212.69,152A88.05,88.05,0,0,0,216,128ZM92,120a12,12,0,1,0-12-12A12,12,0,0,0,92,120Zm72-24a12,12,0,1,0,12,12A12,12,0,0,0,164,96Z"></path></svg>
+                    </div>
+                    <textarea
+                        ref={textareaRef}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Message"
+                        rows="1"
+                    />
+                    <div className="bottom-aligned">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#707579" viewBox="0 0 256 256"><path d="M209.66,122.34a8,8,0,0,1,0,11.32l-82.05,82a56,56,0,0,1-79.2-79.21L147.67,35.73a40,40,0,1,1,56.61,56.55L105,193A24,24,0,1,1,71,159L154.3,74.38A8,8,0,1,1,165.7,85.6L82.39,170.31a8,8,0,1,0,11.27,11.36L192.93,81A24,24,0,1,0,159,47L59.76,147.68a40,40,0,1,0,56.53,56.62l82.06-82A8,8,0,0,1,209.66,122.34Z"></path></svg>
+                    </div>
+                </div>
+                <div className="send-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#a044ff" viewBox="0 0 256 256"><path d="M231.87,114l-168-95.89A16,16,0,0,0,40.92,37.34L71.55,128,40.92,218.67A16,16,0,0,0,56,240a16.15,16.15,0,0,0,7.93-2.1l167.92-96.05a16,16,0,0,0,.05-27.89ZM56,224a.56.56,0,0,0,0-.12L85.74,136H144a8,8,0,0,0,0-16H85.74L56.06,32.16A.46.46,0,0,0,56,32l168,95.83Z"></path></svg>
+                </div>
+            </div>
+        </div>
+    );
+}

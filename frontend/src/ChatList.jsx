@@ -1,25 +1,14 @@
-import { PencilSimple } from "phosphor-react";
-import search from './assets/icons/search.svg'
-import menu from './assets/icons/menu.svg'
-import './Messenger.css'
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
-
-export default function Messenger({}){
+export default function ChatList({}){
+    const navigator = useNavigate()
 
     return (
-        <div style={{}}>
-            <header>
-                <img src={menu} alt="menu" />
-                <h1>Vortex</h1>
-                <div className="search-wrapper">
-                    <img src={search} alt="s" />
-                    <input type="text" placeholder="Search" />
-                </div>
-            </header>
             <div className="messenger">
-                <div className="chat">
+                <div className="chat" onClick={()=>(navigator('/m/1'))}>
                     <div className="avatar">
-                        m
+                        M
                     </div>
                     <div className="chat-info">
                         <div className="name-n-time">
@@ -32,7 +21,5 @@ export default function Messenger({}){
                     </div>
                 </div>
             </div>
-        </div>
-
     )
 }
