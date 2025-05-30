@@ -1,22 +1,94 @@
 import { useState, useRef, useEffect } from "react";
-import send from './assets/icons/send.svg';
-import paperclip from './assets/icons/paperclip.svg';
-import sticker from './assets/icons/sticker.svg';
+import { useNavigate, useOutletContext } from "react-router-dom";
 import './ChatWindow.css';
+import api from "./api";
 
 export default function ChatWindow() {
+    const navigator = useNavigate();
+    const { currentUser, currentChat } = useOutletContext();
     const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState([]);
     const textareaRef = useRef(null);
     const messageSendRef = useRef(null);
+    const messagesEndRef = useRef(null);
+    const ws = useRef(null)
 
-    // Автоматическое увеличение высоты textarea при переносе строк
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
+
+    
+    useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const response = await api.get(`/messages/${currentChat}`);
+        console.log(response);
+        setMessages(response.data.history);
+      } catch (error) {
+        console.error("Can't get chat history:", error);
+      }
+    };
+    loadHistory();
+  }, [currentChat]);
+
+    useEffect(() => {
+    if (!currentUser || !currentChat) return;
+
+    const wsUrl = `ws://${window.location.hostname}:8000/ws`;
+    ws.current = new WebSocket(wsUrl);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket подключён");
+      ws.current.send(
+        JSON.stringify({
+          receiver: currentChat,
+        })
+      );
+    };
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "history") {
+        setMessages(data.messages);
+      } else if (data.type === "new_message") {
+        setMessages((prev) => [...prev, data.message]);
+      }
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket отключён");
+    };
+
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, [currentUser, currentChat]);
+
+  const sendMessage = () => {
+    if (!message.trim() || !ws.current || !currentUser) return;
+
+    const messageData = {
+      receiver: currentChat,
+      text: message,
+    };
+
+    if (ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify(messageData));
+      setMessage("");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") sendMessage();
+  };
+
+    // Автовысота textarea
     useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {
             textarea.style.height = "auto";
             textarea.style.height = `${textarea.scrollHeight}px`;
-            
-            // Обновляем высоту контейнера
+
             if (messageSendRef.current) {
                 const newHeight = Math.min(Math.max(textarea.scrollHeight, 58), 200);
                 messageSendRef.current.style.height = `${newHeight}px`;
@@ -26,7 +98,19 @@ export default function ChatWindow() {
 
     return (
         <div className="messenger-chat">
-            <div className="chat-messages"></div>
+            <div className="chat-messages">
+                {messages.map((msg, index) => (
+                    <div key={index} className={msg.sender === currentUser ? "sended" : "received"}>
+                        <div className="msg">
+                            <p className="message-text">{msg.text}</p>
+                            <p className="time">
+                                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                        </div>
+                    </div>
+                ))}
+                <div ref={messagesEndRef} />
+            </div>
 
             <div className="message-send" ref={messageSendRef}>
                 <div className="message-input">
@@ -37,6 +121,7 @@ export default function ChatWindow() {
                         ref={textareaRef}
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={handleKeyPress}
                         placeholder="Message"
                         rows="1"
                     />
@@ -44,7 +129,7 @@ export default function ChatWindow() {
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#707579" viewBox="0 0 256 256"><path d="M209.66,122.34a8,8,0,0,1,0,11.32l-82.05,82a56,56,0,0,1-79.2-79.21L147.67,35.73a40,40,0,1,1,56.61,56.55L105,193A24,24,0,1,1,71,159L154.3,74.38A8,8,0,1,1,165.7,85.6L82.39,170.31a8,8,0,1,0,11.27,11.36L192.93,81A24,24,0,1,0,159,47L59.76,147.68a40,40,0,1,0,56.53,56.62l82.06-82A8,8,0,0,1,209.66,122.34Z"></path></svg>
                     </div>
                 </div>
-                <div className="send-button">
+                <div className="send-button" onClick={sendMessage}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#a044ff" viewBox="0 0 256 256"><path d="M231.87,114l-168-95.89A16,16,0,0,0,40.92,37.34L71.55,128,40.92,218.67A16,16,0,0,0,56,240a16.15,16.15,0,0,0,7.93-2.1l167.92-96.05a16,16,0,0,0,.05-27.89ZM56,224a.56.56,0,0,0,0-.12L85.74,136H144a8,8,0,0,0,0-16H85.74L56.06,32.16A.46.46,0,0,0,56,32l168,95.83Z"></path></svg>
                 </div>
             </div>

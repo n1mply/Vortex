@@ -56,6 +56,7 @@ async def register(data: RegisterModel):
         "email": data.email,
         "password": pwd_context.hash(data.password),
         "created_at": datetime.utcnow(),
+        
     }
     result = await users_collection.insert_one(user_doc)
 

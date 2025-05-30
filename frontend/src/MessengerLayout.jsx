@@ -1,26 +1,20 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
-import search from './assets/icons/search.svg'
-import menu from './assets/icons/menu.svg'
-import back from './assets/icons/back.svg'
+import { useNavigate, Outlet, useParams } from "react-router-dom";
 import api from './api'
 import './Messenger.css'
+import MessengerHeader from "./MessengerHeader";
 
 export default function MessengerLayout() {
     const navigator = useNavigate()
+    const userId = useParams()
+    const [currentUser, setCurrentUser] = useState(null);
+    const [currentChat, setCurrentChat] = useState(null);
     const [showSearch, setShowSearch] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [chats, setChats] = useState([])
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const timeoutRef = useRef(null);
-
-
-    const relocate = async () => {
-        setShowSearch(false)
-        setSearchQuery("")
-        navigator('/m')
-    }
-
 
     const searchUsers = async (query) => {
         if (!query.trim()) {
@@ -61,44 +55,60 @@ export default function MessengerLayout() {
         };
     }, [searchQuery]);
 
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+        try {
+            const response = await api.get("/protected");
+            setCurrentUser(response.data.username);
+        } catch (error) {
+            console.error("User not found:", error);
+        } 
+    };
+    fetchCurrentUser();
+    }, [api]);
+
+    useEffect(() => {
+        const fetchCurrentChat = async () => {
+        try {
+            console.log(userId.userId)
+            const response = await api.get(`/user/id/${userId.userId}`);
+            console.log(response)
+            setCurrentChat(response.data.username);
+        } catch (error) {
+            console.error("User not found:", error);
+        } 
+    };
+    fetchCurrentChat();
+    }, [api, userId]);
+
+
+    const fetchChats = async () =>{
+        try{
+            const response = await api.get('/chats/get')
+            setChats(response.data.chats)
+            setIsLoading(false)
+            console.log(response.data.chats)
+        } catch (error){
+            console.error(error)
+            }
+        }
+
+
+    useEffect(()=>{
+        fetchChats()
+    }, [api])
+    
+
     return (
         <div style={{ position: 'relative' }}>
-            <header>
-            <div className="icon-container" style={{ position: 'relative', width: '24px', height: '24px'}}>
-                <img 
-                    src={menu} 
-                    alt="menu" 
-                    style={{
-                        position: 'absolute',
-                        opacity: showSearch ? 0 : 1,
-                        transition: 'opacity 0.3s ease',
-                        pointerEvents: showSearch ? 'none' : 'auto'
-                    }}
-                />
-                <img 
-                    src={back} 
-                    alt="back" 
-                    style={{
-                        position: 'absolute',
-                        opacity: showSearch ? 1 : 0,
-                        transition: 'opacity 0.3s ease',
-                        pointerEvents: showSearch ? 'auto' : 'none'
-                    }}
-                    onClick={relocate}
-                />
-                </div>
-                <h1 style={{opacity: !showSearch ? 1 : 0}} >Vortex</h1>
-                <div style={{width: !showSearch ? '': '80%'}} className="search-wrapper">
-                    <img src={search} alt="s"/>
-                    <input 
-                        type="text" 
-                        placeholder="Search" 
-                        onFocus={() => setShowSearch(true)}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-            </header>
+            <MessengerHeader 
+            showSearch={showSearch}
+            setShowSearch={setShowSearch} 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery}
+            chatName={currentChat}
+            >
+            </MessengerHeader>
 
             <div style={{ display: showSearch ? 'flex' : 'none' , zIndex: '100'}} className="search-select">
                 {isLoading ? (
@@ -123,7 +133,7 @@ export default function MessengerLayout() {
                 )}
             </div>
             <div className="chat-window">
-                <Outlet></Outlet>
+                <Outlet context={{currentUser: currentUser, currentChat: currentChat, chats: chats }}></Outlet>
             </div>
         </div>
     )

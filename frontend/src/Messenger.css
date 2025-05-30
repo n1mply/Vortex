@@ -22,8 +22,9 @@ header{
         background-color: #151515;
         border-radius: 50px;
         padding: 0 10px;
-        width: 50%;
+        width: 200px;
         transition: width 0.3s ease;
+        margin-right: 20px;
     }
     .search-wrapper input{
         height: 100%; 
@@ -61,6 +62,65 @@ header{
     }
 }
 
+header {
+    position: relative;
+    height: 51px;
+    overflow: hidden;
+}
+
+.header-content, .chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px;
+    width: 100%;
+    height: 51px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.3s ease;
+}
+
+.header-hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.chat-header {
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.chat-header-visible {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: all;
+}
+
+.chat-username {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 60%;
+}
+
+.header-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    margin-left: 5px;
+}
+
+.header-icon:hover {
+    filter: brightness(1.2);
+}
 
 .messenger{
     display: flex;
