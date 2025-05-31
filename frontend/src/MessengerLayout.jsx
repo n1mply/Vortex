@@ -3,6 +3,7 @@ import { useNavigate, Outlet, useParams } from "react-router-dom";
 import api from './api'
 import './Messenger.css'
 import MessengerHeader from "./MessengerHeader";
+import { WebSocketProvider, useWebSocket } from "./WebSocketContext";
 
 export default function MessengerLayout() {
     const navigator = useNavigate()
@@ -15,6 +16,20 @@ export default function MessengerLayout() {
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const timeoutRef = useRef(null);
+
+    // Используем WebSocket контекст
+    const { registerHandler } = useWebSocket(); // Добавлено
+
+    // Подписка на обновления чатов
+    useEffect(() => {
+        const unregister = registerHandler((data) => {
+        if (data.type === "chats_updated") {
+            fetchChats();
+        }
+        });
+        return unregister;
+    }, [registerHandler]);
+
 
     const searchUsers = async (query) => {
         if (!query.trim()) {

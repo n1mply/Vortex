@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 const WebSocketContext = createContext(null);
 
 export const WebSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const [messageHandlers, setMessageHandlers] = useState([]);
+  const handlersRef = useRef(new Set()); // Используем useRef для хранения обработчиков
 
   // Инициализация WebSocket
   useEffect(() => {
@@ -18,12 +18,12 @@ export const WebSocketProvider = ({ children }) => {
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      messageHandlers.forEach(handler => handler(data));
+      handlersRef.current.forEach(handler => handler(data));
     };
 
     ws.onclose = () => {
       console.log("Global WebSocket отключён");
-      setTimeout(() => setSocket(null), 5000); // Переподключение через 5 сек
+      setTimeout(() => setSocket(null), 5000);
     };
 
     return () => {
@@ -33,11 +33,11 @@ export const WebSocketProvider = ({ children }) => {
     };
   }, []);
 
-  // Регистрация обработчиков сообщений
+  // Регистрация обработчиков сообщений (без лишних ререндеров)
   const registerHandler = (handler) => {
-    setMessageHandlers(prev => [...prev, handler]);
+    handlersRef.current.add(handler);
     return () => {
-      setMessageHandlers(prev => prev.filter(h => h !== handler));
+      handlersRef.current.delete(handler);
     };
   };
 

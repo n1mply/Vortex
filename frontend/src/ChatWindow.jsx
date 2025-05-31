@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import './ChatWindow.css';
 import api from "./api";
+import { useWebSocket } from "./WebSocketContext";
 
 export default function ChatWindow() {
     const navigator = useNavigate();
@@ -11,7 +12,8 @@ export default function ChatWindow() {
     const textareaRef = useRef(null);
     const messageSendRef = useRef(null);
     const messagesEndRef = useRef(null);
-    const ws = useRef(null)
+
+    const { send, registerHandler } = useWebSocket(); // Добавлено
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,53 +33,37 @@ export default function ChatWindow() {
     loadHistory();
   }, [currentChat]);
 
+    // Подписка на сообщения WebSocket
     useEffect(() => {
-    if (!currentUser || !currentChat) return;
+      if (!currentUser || !currentChat) return;
 
-    const wsUrl = `ws://${window.location.hostname}:8000/ws`;
-    ws.current = new WebSocket(wsUrl);
+    // Отправляем серверу информацию о текущем чате
+      send({ receiver: currentChat });
 
-    ws.current.onopen = () => {
-      console.log("WebSocket подключён");
-      ws.current.send(
-        JSON.stringify({
-          receiver: currentChat,
-        })
-      );
-    };
-
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+    const unregister = registerHandler((data) => {
       if (data.type === "history") {
         setMessages(data.messages);
       } else if (data.type === "new_message") {
         setMessages((prev) => [...prev, data.message]);
-      } else if (data.type === "chats_updated") {
-        onChatsUpdate();
       }
-    };
+    });
 
-    ws.current.onclose = () => {
-      console.log("WebSocket отключён");
-    };
+    return unregister;
+  }, [currentUser, currentChat, registerHandler, send]);
 
-    return () => {
-      if (ws.current) ws.current.close();
-    };
-  }, [currentUser, currentChat, onChatsUpdate]);
 
+
+  // Отправка сообщения
   const sendMessage = () => {
-    if (!message.trim() || !ws.current || !currentUser) return;
+    if (!message.trim() || !currentUser) return;
 
     const messageData = {
       receiver: currentChat,
       text: message,
     };
 
-    if (ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify(messageData));
-      setMessage("");
-    }
+    send(messageData);
+    setMessage("");
   };
 
   const handleKeyPress = (e) => {

@@ -7,11 +7,13 @@ import SessionCheck from "./SessionChecker";
 import MessengerLayout from './MessengerLayout'
 import ChatList from './ChatList'
 import ChatWindow from './ChatWindow'
+import { WebSocketProvider } from "./WebsocketContext";
 
 export default function App({}) {
 
   return (
     <Router>
+      <WebSocketProvider>
       <SessionCheck />
         <Routes>
         <Route path="/m" element={<MessengerLayout />}>
@@ -22,6 +24,7 @@ export default function App({}) {
         <Route path="/loading" element={<Loading>One Moment..</Loading>}/>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      </WebSocketProvider>
       {/* <p style={{color: "rgba(255, 255, 255, 0.5)", textAlign:'center', width: '100%', position: 'absolute', top: "105vh", marginTop: '13vh', zIndex: '-1', userSelect:'none'}}>v.0.0.2</p> */}
     </Router>
   )
