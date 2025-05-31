@@ -3,6 +3,7 @@ import menu from './assets/icons/menu.svg'
 import back from './assets/icons/back.svg'
 import dots from './assets/icons/dots.svg'
 import { useNavigate } from 'react-router-dom';
+import './MessengerHeader.css'
 
 
 export default function MessengerHeader({showSearch, setShowSearch, searchQuery, setSearchQuery, chatName}){
@@ -67,9 +68,19 @@ export default function MessengerHeader({showSearch, setShowSearch, searchQuery,
                             onClick={relocate}
                         />
                     </div>
-                    <h2 className="chat-username">
-                        {chatName}
-                    </h2>
+                    <div className="chat-header-info">
+                        <div className="avatar">
+                            {chatName ? chatName[0] : ' '}
+                        </div>
+                        <div className="chat-user-info">
+                            <p className="chat-name">
+                                {chatName}
+                            </p>
+                            <div className="chat-status">
+                                last seen at 14:22
+                            </div>
+                        </div>
+                    </div>
                     <div className="icon-container">
                         <img 
                             src={dots} 

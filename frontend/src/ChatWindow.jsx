@@ -97,7 +97,7 @@ export default function ChatWindow() {
     }, [message]);
 
     return (
-        <div className="messenger-chat">
+        <div style={{zIndex: 200}} className="messenger-chat">
             <div className="chat-messages">
                 {messages.map((msg, index) => (
                     <div key={index} className={msg.sender === currentUser ? "sended" : "received"}>
@@ -109,7 +109,7 @@ export default function ChatWindow() {
                         </div>
                     </div>
                 ))}
-                <div ref={messagesEndRef} />
+                <div/>
             </div>
 
             <div className="message-send" ref={messageSendRef}>

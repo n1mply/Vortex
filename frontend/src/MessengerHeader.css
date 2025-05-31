@@ -1,0 +1,33 @@
+.chat-header-info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    .avatar{
+        margin-left: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 100px;
+        width: 35px;
+        height: 35px;
+        background-color: #A044ff;
+        color: #fff;
+    }
+    .chat-user-info{
+        display: flex;
+        flex-direction: column;
+
+        p{
+            margin: 0;
+        }
+        .chat-name{
+            color: #fff;
+        }
+        .chat-status{
+            color: #545454;
+            font-size: 14px;
+        }
+    }
+}
