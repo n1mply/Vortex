@@ -133,7 +133,7 @@ export default function MessengerLayout() {
                 )}
             </div>
             <div className="chat-window">
-                <Outlet context={{currentUser: currentUser, currentChat: currentChat, chats: chats }}></Outlet>
+                <Outlet context={{currentUser: currentUser, currentChat: currentChat, chats: chats, onChatsUpdate: fetchChats }}></Outlet>
             </div>
         </div>
     )

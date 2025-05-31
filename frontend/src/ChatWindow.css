@@ -138,10 +138,10 @@
     justify-content: right;
     align-items: center;
     .msg{
+        max-width: 80%;
         background-color: #A044ff;
         border-radius: 12px 12px 1px 12px;
         padding: 8px;
-        width: 80%;
         word-wrap: break-word;
         p{    
             margin: 0px;
@@ -149,6 +149,7 @@
         }
         .time{
             text-align: right;
+            color: #dfdfdf;
         }
     }
 }
@@ -163,7 +164,7 @@
         background-color: #191919;
         border-radius: 12px 12px 12px 1px;
         padding: 8px;
-        width: 80%;
+        max-width: 80%;
         word-wrap: break-word;
         p{    
             margin: 0px;
@@ -171,6 +172,7 @@
         }
         .time{
             text-align: right;
+            color: #dfdfdf;
         }
     }
 }

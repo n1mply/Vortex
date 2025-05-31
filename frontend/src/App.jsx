@@ -22,7 +22,7 @@ export default function App({}) {
         <Route path="/loading" element={<Loading>One Moment..</Loading>}/>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-      {/* <p style={{color: "rgba(255, 255, 255, 0.5)", textAlign:'center', width: '100%', position: 'absolute', top: "105vh", marginTop: '13vh', zIndex: '-1', userSelect:'none'}}>v.0.0.1</p> */}
+      {/* <p style={{color: "rgba(255, 255, 255, 0.5)", textAlign:'center', width: '100%', position: 'absolute', top: "105vh", marginTop: '13vh', zIndex: '-1', userSelect:'none'}}>v.0.0.2</p> */}
     </Router>
   )
 }

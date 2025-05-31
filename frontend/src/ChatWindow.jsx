@@ -5,7 +5,7 @@ import api from "./api";
 
 export default function ChatWindow() {
     const navigator = useNavigate();
-    const { currentUser, currentChat } = useOutletContext();
+    const { currentUser, currentChat, onChatsUpdate } = useOutletContext();
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const textareaRef = useRef(null);
@@ -52,6 +52,8 @@ export default function ChatWindow() {
         setMessages(data.messages);
       } else if (data.type === "new_message") {
         setMessages((prev) => [...prev, data.message]);
+      } else if (data.type === "chats_updated") {
+        onChatsUpdate();
       }
     };
 
@@ -62,7 +64,7 @@ export default function ChatWindow() {
     return () => {
       if (ws.current) ws.current.close();
     };
-  }, [currentUser, currentChat]);
+  }, [currentUser, currentChat, onChatsUpdate]);
 
   const sendMessage = () => {
     if (!message.trim() || !ws.current || !currentUser) return;
@@ -82,8 +84,7 @@ export default function ChatWindow() {
     if (e.key === "Enter") sendMessage();
   };
 
-    // Автовысота textarea
-    useEffect(() => {
+  useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {
             textarea.style.height = "auto";
@@ -104,7 +105,7 @@ export default function ChatWindow() {
                         <div className="msg">
                             <p className="message-text">{msg.text}</p>
                             <p className="time">
-                                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                {new Date(new Date(msg.timestamp).getTime() + 10800000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </p>
                         </div>
                     </div>

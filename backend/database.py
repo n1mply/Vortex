@@ -3,7 +3,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
 import re
 from datetime import datetime
-import pytz
 from pydantic import BaseModel
 
 MONGO_URL = "mongodb://localhost:27017"
@@ -18,7 +17,7 @@ class Message(BaseModel):
     sender: str
     receiver: str
     text: str
-    timestamp: datetime = None
+    timestamp: datetime
 
 
 async def search_users_by_username(username: str, threshold: float = 0.4):
@@ -111,14 +110,12 @@ async def create_message_indexes():
     ], name="chat_history_idx")
 
 async def save_message(sender: str, receiver: str, text: str):  
-    tz = pytz.timezone("Europe/Moscow")  
-    current_time = datetime.now(tz)  # Получаем текущее время с учётом пояса
     
     message = Message(
         sender=sender,
         receiver=receiver,
         text=text,
-        timestamp=current_time  # Сохраняем время с поясом
+        timestamp=datetime.utcnow()  # Сохраняем время с поясом
     )
     
     result = await message_collection.insert_one(message.dict())

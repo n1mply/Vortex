@@ -15,7 +15,7 @@ export default function ChatList({}){
                     <div className="chat-info">
                         <div className="name-n-time">
                             <p className="username">{chat.username}</p>
-                            <p className="date">{new Date(chat.last_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                            <p className="date">{new Date(new Date(chat.last_time).getTime() + 10800000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                         </div>
                         <div className="last-message">
                             {chat.last_message}

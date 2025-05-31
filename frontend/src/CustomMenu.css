@@ -1,0 +1,41 @@
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgb(0, 0, 0);
+    background-color: #202020;
+    padding: 10px;
+    border-radius: 12px;
+    width: 250px;
+    color: #fff;
+    gap: 5px;
+    .profile{
+        border-bottom: 1px #545454 solid;
+    }
+    .option{
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        gap: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        user-select: none;
+        p{
+            margin: 0;
+        }
+        .avatar{
+            width: 28px;
+            height: 28px;
+            background-color: #a044ff;
+            border-radius: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    .option:hover{
+        transition: 0.3s all ease;
+        background-color: #0e0e0e;
+    }
+}
+
+
