@@ -91,11 +91,11 @@
     width: 100%;
     min-height: 40vh;
     left: 0;       
-    top: 30vh;
+    top: 0vh;
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    padding-top: 30vh;
+    transition: 0.3s all ease;
 }
 
 .button-container button{
@@ -150,10 +150,9 @@
   }
 }
 
-@media (max-height: 800px) {
+@media (max-width: 800px) {
     .button-container {
-        min-height: 20vh;
-        padding-top: 10vh;
+        transition: 0.3s all ease;
     }
     
     .logo-label .logo-container {
@@ -170,22 +169,15 @@
 }
 
 /* Дополнительные стили для очень маленьких экранов */
-@media (max-height: 600px) {
-    .button-container {
-        min-height: 15vh;
-        padding-top: 5vh;
+@media (max-width: 600px) {
+    .button-container { 
+        transition: 0.3s all ease;
     }
-    
-    .logo-label .logo-container {
-        height: 80px;
+    .center p{
+        font-size: 14px;
     }
-    
-    .logo-label h1 {
-        font-size: 24px;
-    }
-    
     .queries {
-        gap: 10px; /* Уменьшаем отступы между критериями пароля */
+        gap: 10px;
     }
 }
 
