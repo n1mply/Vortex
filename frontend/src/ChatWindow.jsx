@@ -3,74 +3,69 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import './ChatWindow.css';
 import api from "./api";
 import { useWebSocket } from "./WebSocketContext";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function ChatWindow() {
     const navigator = useNavigate();
-    const { currentUser, currentChat, onChatsUpdate } = useOutletContext();
+    const { currentUser, currentChat } = useOutletContext();
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const textareaRef = useRef(null);
     const messageSendRef = useRef(null);
     const messagesEndRef = useRef(null);
 
-    const { send, registerHandler } = useWebSocket(); // Добавлено
+    const { send, registerHandler } = useWebSocket();
+
+    // useEffect(() => {
+    //   if (messages.length > 0) {
+    //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    //   }
+    // }, [messages]);
+
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+        const loadHistory = async () => {
+            try {
+                const response = await api.get(`/messages/${currentChat}`);
+                setMessages(response.data.history);
+            } catch (error) {
+                console.error("Can't get chat history:", error);
+            }
+        };
+        loadHistory();
+    }, [currentChat]);
 
-    
     useEffect(() => {
-    const loadHistory = async () => {
-      try {
-        const response = await api.get(`/messages/${currentChat}`);
-        console.log(response);
-        setMessages(response.data.history);
-      } catch (error) {
-        console.error("Can't get chat history:", error);
-      }
+        if (!currentUser || !currentChat) return;
+
+        send({ receiver: currentChat });
+
+        const unregister = registerHandler((data) => {
+            if (data.type === "history") {
+                setMessages(data.messages);
+            } else if (data.type === "new_message") {
+                setMessages((prev) => [...prev, data.message]);
+            }
+        });
+
+        return unregister;
+    }, [currentUser, currentChat, registerHandler, send]);
+
+    const sendMessage = () => {
+        if (!message.trim() || !currentUser) return;
+
+        const messageData = {
+            receiver: currentChat,
+            text: message,
+        };
+
+        send(messageData);
+        setMessage("");
     };
-    loadHistory();
-  }, [currentChat]);
 
-    // Подписка на сообщения WebSocket
+
     useEffect(() => {
-      if (!currentUser || !currentChat) return;
-
-    // Отправляем серверу информацию о текущем чате
-      send({ receiver: currentChat });
-
-    const unregister = registerHandler((data) => {
-      if (data.type === "history") {
-        setMessages(data.messages);
-      } else if (data.type === "new_message") {
-        setMessages((prev) => [...prev, data.message]);
-      }
-    });
-
-    return unregister;
-  }, [currentUser, currentChat, registerHandler, send]);
-
-
-
-  // Отправка сообщения
-  const sendMessage = () => {
-    if (!message.trim() || !currentUser) return;
-
-    const messageData = {
-      receiver: currentChat,
-      text: message,
-    };
-
-    send(messageData);
-    setMessage("");
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") sendMessage();
-  };
-
-  useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {
             textarea.style.height = "auto";
@@ -83,20 +78,44 @@ export default function ChatWindow() {
         }
     }, [message]);
 
+    // Парсинг сообщения для отображения кода и обычного текста
+    const parseMessage = (text) => {
+        const parts = text.split(/(```[\s\S]*?```)/g);
+        return parts.map((part, i) => {
+            if (part.startsWith("```") && part.endsWith("```")) {
+                const code = part.slice(3, -3).trim();
+                return (
+                    <SyntaxHighlighter
+                        key={i}
+                        language="python"
+                        style={oneDark}
+                        customStyle={{ borderRadius: "0.5rem", padding: "1rem" }}
+                    >
+                        {code}
+                    </SyntaxHighlighter>
+                );
+            } else {
+                return <p key={i}>{part}</p>;
+            }
+        });
+    };
+
     return (
-        <div style={{zIndex: 200}} className="messenger-chat">
+        <div style={{ zIndex: 200 }} className="messenger-chat">
             <div className="chat-messages">
                 {messages.map((msg, index) => (
                     <div key={index} className={msg.sender === currentUser ? "sended" : "received"}>
                         <div className="msg">
-                            <p className="message-text">{msg.text}</p>
+                            <div className="message-text">
+                                {parseMessage(msg.text)}
+                            </div>
                             <p className="time">
                                 {new Date(new Date(msg.timestamp).getTime() + 10800000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </p>
                         </div>
                     </div>
                 ))}
-                <div/>
+                <div ref={messagesEndRef} />
             </div>
 
             <div className="message-send" ref={messageSendRef}>
@@ -108,7 +127,6 @@ export default function ChatWindow() {
                         ref={textareaRef}
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={handleKeyPress}
                         placeholder="Message"
                         rows="1"
                     />

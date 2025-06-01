@@ -4,15 +4,14 @@ const WebSocketContext = createContext(null);
 
 export const WebSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const handlersRef = useRef(new Set()); // Используем useRef для хранения обработчиков
+  const handlersRef = useRef(new Set());
 
-  // Инициализация WebSocket
   useEffect(() => {
     const wsUrl = `ws://${window.location.hostname}:8000/ws`;
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log("Global WebSocket подключён");
+      console.log("WebSocket подключён");
       setSocket(ws);
     };
 
@@ -22,7 +21,7 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     ws.onclose = () => {
-      console.log("Global WebSocket отключён");
+      console.log("WebSocket отключён");
       setTimeout(() => setSocket(null), 5000);
     };
 
@@ -33,7 +32,7 @@ export const WebSocketProvider = ({ children }) => {
     };
   }, []);
 
-  // Регистрация обработчиков сообщений (без лишних ререндеров)
+
   const registerHandler = (handler) => {
     handlersRef.current.add(handler);
     return () => {
