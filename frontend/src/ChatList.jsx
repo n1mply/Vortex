@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useOutletContext } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import { useChat } from './context/ChatContext';
 
 export default function ChatList({}){
     const navigator = useNavigate()
-    const {chats} = useOutletContext()
+    const {chats} = useChat()
 
     return (
             <div className="messenger">

@@ -1,4 +1,4 @@
-import { useSignUp } from '../SignUpContext';
+import { useSignUp } from '../context/SignUpContext';
 import hurricane from '/hurricane.svg';
 import vletter from '/v.svg';
 import '../SignUp.css';

@@ -27,15 +27,15 @@ async def get_current_user(request: Request):
     """
     session_id = request.cookies.get(SESSION_COOKIE)
     if not session_id:
-        raise HTTPException(status_code=401, detail="Не авторизован")
+        raise HTTPException(status_code=401, detail="Unauthoraized")
 
     session = await sessions_collection.find_one({"_id": session_id})
     if not session:
-        raise HTTPException(status_code=401, detail="Сессия не найдена")
+        raise HTTPException(status_code=401, detail="Session not found")
 
     if session["expires_at"] < datetime.utcnow():
         await sessions_collection.delete_one({"_id": session_id})
-        raise HTTPException(status_code=401, detail="Сессия истекла")
+        raise HTTPException(status_code=401, detail="Session expried")
     
     user = await users_collection.find_one(
         {"_id": session["user_id"]},
@@ -47,10 +47,10 @@ async def get_current_user(request: Request):
 async def register(data: RegisterModel):
     print(data.email, data.username, data.password)
     if await users_collection.find_one({"username": data.username}):
-        raise HTTPException(status_code=400, detail="Имя пользователя занято")
+        raise HTTPException(status_code=400, detail="Username already exists")
 
     if await users_collection.find_one({"email": data.email}):
-        raise HTTPException(status_code=400, detail="E-mail уже используется")
+        raise HTTPException(status_code=400, detail="E-mail already exists")
     user_doc = {
         "username": data.username,
         "email": data.email,
@@ -60,13 +60,13 @@ async def register(data: RegisterModel):
     }
     result = await users_collection.insert_one(user_doc)
 
-    return {"message": "Пользователь создан", "user_id": str(result.inserted_id)}
+    return {"message": "User successfully created", "user_id": str(result.inserted_id)}
 
 @auth_router.post("/login")
 async def login(data: LoginModel, response: Response):
     user = await users_collection.find_one({"username": data.username})
     if not user or not pwd_context.verify(data.password, user["password"]):
-        raise HTTPException(status_code=401, detail="Неверные учётные данные")
+        raise HTTPException(status_code=401, detail="Invalid data")
 
     session_id = str(uuid.uuid4())
     expires_at = datetime.utcnow() + timedelta(minutes=SESSION_EXPIRE_MINUTES)
@@ -94,4 +94,4 @@ async def logout(request: Request, response: Response):
         await sessions_collection.delete_one({"_id": session_id})
         response.delete_cookie(SESSION_COOKIE)
 
-    return {"message": "Вы вышли из системы"}
+    return {"message": "You have successfully logged out"}

@@ -4,29 +4,35 @@ import back from './assets/icons/back.svg'
 import dots from './assets/icons/dots.svg'
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import { useWebSocket } from './context/WebsocketContext';
 import CustomMenu from './CustomMenu';
 import './MessengerHeader.css'
-
-
 
 export default function MessengerHeader({showSearch, setShowSearch, searchQuery, setSearchQuery, chatName}){
     const isInChat = location.pathname.startsWith('/m/') && location.pathname !== '/m';
     const [isSettingsActive, setIsSettingsActive] = useState(false)
     const navigator = useNavigate()
     const menuRef = useRef(null);
+    const { getUserStatus, formatLastSeen, requestUserStatus } = useWebSocket();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-        if (menuRef.current && !menuRef.current.contains(event.target)) {
-            setIsSettingsActive(false);
-        }
-    };
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setIsSettingsActive(false);
+            }
+        };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isInChat && chatName) {
+            requestUserStatus(chatName);
+        }
+    }, [isInChat, chatName, requestUserStatus]);
 
     const relocate = async () => {
         if (isInChat) {
@@ -36,40 +42,54 @@ export default function MessengerHeader({showSearch, setShowSearch, searchQuery,
             setSearchQuery("");
         }
     };
+
+    const userStatus = chatName ? getUserStatus(chatName) : null;
+
+    const getStatusText = () => {
+        if (!userStatus) return 'offline';
+        
+        if (userStatus.status === 'online') {
+            return 'online';
+        } else {
+            const lastSeenText = formatLastSeen(userStatus.last_seen);
+            return lastSeenText ? `last seen ${lastSeenText}` : 'offline';
+        }
+    };
+
     return (
         <>
             <header>
                 <div style={{position: 'relative'}} className={`header-content ${isInChat ? 'header-hidden' : ''}`}>
-                    <div  className="icon-container">
-                        <img 
-                            src={menu} 
-                            alt="menu" 
+                    <div className="icon-container">
+                        <img
+                            src={menu}
+                            alt="menu"
                             className="header-icon"
                             onClick={()=>(setIsSettingsActive(!isSettingsActive))}
                             style={{
                                 position: 'absolute',
                                 opacity: showSearch ? 0 : 1,
                                 transition: 'opacity 0.3s ease',
-                    }}/>
-                        <img 
-                            src={back} 
-                            alt="back" 
+                            }}/>
+                        <img
+                            src={back}
+                            alt="back"
                             className="header-icon"
                             style={{
                                 position: 'absolute',
                                 opacity: showSearch ? 1 : 0,
                                 transition: 'opacity 0.3s ease',
                                 pointerEvents: showSearch ? 'auto' : 'none'
-                    }}
-                        onClick={relocate}
+                            }}
+                            onClick={relocate}
                         />
                     </div>
                     <h1 style={{ opacity: !showSearch ? 1 : 0 }}>Vortex</h1>
                     <div style={{ width: !showSearch ? '' : '80%' }} className="search-wrapper">
                         <img src={search} alt="search"/>
-                        <input 
-                            type="text" 
-                            placeholder="Search" 
+                        <input
+                            type="text"
+                            placeholder="Search"
                             onFocus={() => setShowSearch(true)}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -79,9 +99,9 @@ export default function MessengerHeader({showSearch, setShowSearch, searchQuery,
 
                 <div className={`chat-header ${isInChat ? 'chat-header-visible' : ''}`}>
                     <div className="icon-container">
-                        <img 
-                            src={back} 
-                            alt="back" 
+                        <img
+                            src={back}
+                            alt="back"
                             className="header-icon"
                             onClick={relocate}
                         />
@@ -94,15 +114,15 @@ export default function MessengerHeader({showSearch, setShowSearch, searchQuery,
                             <p className="chat-name">
                                 {chatName}
                             </p>
-                            <div className="chat-status">
-                                last seen at 14:22
+                            <div className={`chat-status ${userStatus?.status === 'online' ? 'online' : 'offline'}`}>
+                                {getStatusText()}
                             </div>
                         </div>
                     </div>
                     <div className="icon-container">
-                        <img 
-                            src={dots} 
-                            alt="menu" 
+                        <img
+                            src={dots}
+                            alt="menu"
                             className="header-icon"
                         />
                     </div>

@@ -7,7 +7,7 @@ import SessionCheck from "./SessionChecker";
 import MessengerLayout from './MessengerLayout'
 import ChatList from './ChatList'
 import ChatWindow from './ChatWindow'
-import { WebSocketProvider } from "./WebsocketContext";
+import { WebSocketProvider } from "./context/WebsocketContext";
 
 export default function App({}) {
 

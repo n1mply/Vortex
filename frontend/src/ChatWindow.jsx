@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import './ChatWindow.css';
 import api from "./api";
-import { useWebSocket } from "./WebSocketContext";
+import { useWebSocket } from "./context/WebsocketContext";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useChat } from "./context/ChatContext";
 
 export default function ChatWindow() {
     const navigator = useNavigate();
-    const { currentUser, currentChat } = useOutletContext();
+    const { currentUser, currentChat } = useChat();
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const textareaRef = useRef(null);
@@ -84,7 +85,6 @@ useEffect(() => {
         }
     }, [message]);
 
-    // Парсинг сообщения для отображения кода и обычного текста
     const parseMessage = (text) => {
         const parts = text.split(/(```[\s\S]*?```)/g);
         return parts.map((part, i) => {

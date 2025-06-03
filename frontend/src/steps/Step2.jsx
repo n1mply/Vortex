@@ -1,4 +1,4 @@
-import { useSignUp } from '../SignUpContext';
+import { useSignUp } from '../context/SignUpContext';
 import CustomInput from '../Input';
 import { At, Eye, EyeSlash, X, Check } from "phosphor-react";
 import '../SignUp.css';

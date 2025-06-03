@@ -1,26 +1,30 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Outlet, useParams } from "react-router-dom";
-import api from './api'
-import './Messenger.css'
+import api from './api';
+import './Messenger.css';
 import MessengerHeader from "./MessengerHeader";
-import { WebSocketProvider, useWebSocket } from "./WebSocketContext";
+import { useWebSocket } from "./context/WebsocketContext.jsx";
+import useWindowWidth from './hooks/windowWidth.jsx';
+import ChatWindow from './ChatWindow.jsx';
+import ChatList from './ChatList.jsx';
+import { ChatProvider } from "./context/ChatContext";
 
 export default function MessengerLayout() {
-    const navigator = useNavigate()
-    const userId = useParams()
+    const windowWidth = useWindowWidth();
+    const navigator = useNavigate();
+    const userId = useParams();
     const [currentUser, setCurrentUser] = useState(null);
     const [currentChat, setCurrentChat] = useState(null);
     const [showSearch, setShowSearch] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [chats, setChats] = useState([])
+    const [chats, setChats] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const timeoutRef = useRef(null);
 
-    // Используем WebSocket контекст
-    const { registerHandler } = useWebSocket(); // Добавлено
+    const { registerHandler } = useWebSocket();
 
-    // Подписка на обновления чатов
+
     useEffect(() => {
         const unregister = registerHandler((data) => {
         if (data.type === "chats_updated") {
@@ -113,8 +117,25 @@ export default function MessengerLayout() {
         fetchChats()
     }, [api])
     
+    const chatContextValue = {
+        currentUser,
+        setCurrentUser,
+        currentChat,
+        setCurrentChat,
+        chats,
+        setChats,
+        fetchChats,
+        isLoading,
+        showSearch,
+        setShowSearch,
+        searchQuery,
+        setSearchQuery,
+        searchResults,
+        setSearchResults
+    };
 
     return (
+         <ChatProvider value={chatContextValue}>
         <div style={{ position: 'relative' }}>
             <MessengerHeader 
             showSearch={showSearch}
@@ -147,9 +168,18 @@ export default function MessengerLayout() {
                     </div>
                 )}
             </div>
-            <div className="chat-window">
-                <Outlet context={{currentUser: currentUser, currentChat: currentChat, chats: chats, onChatsUpdate: fetchChats }}></Outlet>
+            <div className="chat-window" style={{display: 'flex'}}>
+                {windowWidth >= 850 ? (
+                <>
+                    <ChatList />
+                    <ChatWindow />
+                </>
+                ) : (
+                    <Outlet></Outlet>
+                )}
+                
             </div>
         </div>
+        </ChatProvider>
     )
 }

@@ -36,7 +36,6 @@
   transition: all 0.2s ease-out;
 }
 
-/* Плавание метки вверх */
 .floating-label-wrapper .input-field:focus + .floating-label,
 .floating-label-wrapper .input-field:not(:placeholder-shown) + .floating-label {
   top: 2px;
@@ -46,7 +45,7 @@
   color: #A044FF;
 }
 
-/* Иконка */
+
 .input-with-icon svg {
   position: absolute;
   right: 15px;

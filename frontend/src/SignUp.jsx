@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SignUpContext } from './SignUpContext';
+import { SignUpContext } from './context/SignUpContext';
 import api from './api';
 import Step1 from './steps/Step1';
 import Step2 from './steps/Step2';

@@ -46,13 +46,13 @@
     font-size: 16px;
     resize: none;
     min-height: 24px;
-    max-height: 120px; /* 5 строк */
+    max-height: 120px;
     padding: 0 8px;
     line-height: 24px;
     outline: none;
     overflow-y: hidden;
-    margin: 2px 0; /* Для точного выравнивания */
-    align-self: center; /* Центрируем по вертикали */
+    margin: 2px 0;
+    align-self: center;
 }
 
 .message-input textarea::placeholder {
@@ -177,3 +177,35 @@
     }
 }
 
+@media (min-width: 600px) {
+    .sended{
+        transition: 0.3s ease all;
+        display: flex;
+        width: 100%;
+        justify-content: left;
+        align-items: center;
+        .msg{
+            transition: 0.3s ease all;
+            min-width: 25%;
+            border-radius: 12px 12px 12px 1px;
+            p{
+                font-size: 18px;
+            }
+    }
+    }
+    .received{
+        transition: 0.3s ease all;
+        display: flex;
+        width: 100%;
+        justify-content: left;
+        align-items: center;
+        .msg{
+            transition: 0.3s ease all;
+            min-width: 25%;
+            border-radius: 12px 12px 12px 1px;
+            p{
+                font-size: 18px;
+            }
+    }
+    }
+}
