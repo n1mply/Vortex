@@ -70,7 +70,7 @@ const handleSubmit = async () => {
     setTypingTimeout
   };
   if (isLoading===true){
-    return <Loading redirectTo={'/m'} immLoadTime={3}>Creating Your Account..</Loading>
+    return <Loading redirectTo={'/m'} immLoadTime={3} reload={true} >Creating Your Account..</Loading>
   }
 
   return (

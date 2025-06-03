@@ -3,12 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import hurricane from '/hurricane.svg';
 import vletter from '/v.svg';
 
-export default function Loading({ children, redirectTo, immLoadTime = 1 }) {
+export default function Loading({ children, redirectTo, immLoadTime = 1 , reload=false}) {
     const navigate = useNavigate();
 
     useEffect(() => {
         const timer = setTimeout(() => {
             navigate(redirectTo);
+            if (reload){
+                console.log('reload')
+                location.reload()
+            }
         }, immLoadTime * 1000);
 
         return () => clearTimeout(timer);

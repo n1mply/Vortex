@@ -7,7 +7,7 @@ ws_router = APIRouter()
 active_connections = {}
 
 @ws_router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, session_id: str = Cookie(None)):
+async def websocket_chats(websocket: WebSocket, session_id: str = Cookie(None)):
     await websocket.accept()
     print(active_connections)
     if not session_id:
@@ -16,9 +16,6 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str = Cookie(None
     
     try:
         user_info = await get_user_info_by_session(session_id)
-        print('session: ',session_id)
-        print('user: ',user_info[1])
-        print('connections: ',active_connections)
         active_connections[user_info[1]] = websocket
         while True:
             data = await websocket.receive_json()
@@ -55,3 +52,4 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str = Cookie(None
         if websocket.client_state != WebSocketState.DISCONNECTED:
             await websocket.close(code=1011)
             
+

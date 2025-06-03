@@ -36,21 +36,27 @@ export default function ChatWindow() {
         loadHistory();
     }, [currentChat]);
 
-    useEffect(() => {
-        if (!currentUser || !currentChat) return;
+useEffect(() => {
+  if (!currentUser || !currentChat) return;
 
-        send({ receiver: currentChat });
+  send({ receiver: currentChat });
 
-        const unregister = registerHandler((data) => {
-            if (data.type === "history") {
-                setMessages(data.messages);
-            } else if (data.type === "new_message") {
-                setMessages((prev) => [...prev, data.message]);
-            }
-        });
+  const unregister = registerHandler((data) => {
+    if (data.type === "history") {
+      setMessages(data.messages);
+    } else if (data.type === "new_message") {
+      const msg = data.message;
+      if (
+        (msg.sender === currentChat && msg.receiver === currentUser) ||
+        (msg.sender === currentUser && msg.receiver === currentChat)
+      ) {
+        setMessages((prev) => [...prev, msg]);
+      }
+    }
+  });
 
-        return unregister;
-    }, [currentUser, currentChat, registerHandler, send]);
+  return unregister;
+}, [currentUser, currentChat, registerHandler, send]);
 
     const sendMessage = () => {
         if (!message.trim() || !currentUser) return;
