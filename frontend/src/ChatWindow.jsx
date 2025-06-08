@@ -6,6 +6,7 @@ import { useWebSocket } from "./context/WebsocketContext";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useChat } from "./context/ChatContext";
+import ParticlesBackground from "./Background";
 
 export default function ChatWindow() {
     const navigator = useNavigate();
@@ -37,27 +38,27 @@ export default function ChatWindow() {
         loadHistory();
     }, [currentChat]);
 
-useEffect(() => {
-  if (!currentUser || !currentChat) return;
+    useEffect(() => {
+      if (!currentUser || !currentChat) return;
 
-  send({ receiver: currentChat });
+      send({ receiver: currentChat });
 
-  const unregister = registerHandler((data) => {
-    if (data.type === "history") {
-      setMessages(data.messages);
-    } else if (data.type === "new_message") {
-      const msg = data.message;
-      if (
-        (msg.sender === currentChat && msg.receiver === currentUser) ||
-        (msg.sender === currentUser && msg.receiver === currentChat)
-      ) {
-        setMessages((prev) => [...prev, msg]);
-      }
-    }
-  });
+      const unregister = registerHandler((data) => {
+        if (data.type === "history") {
+          setMessages(data.messages);
+        } else if (data.type === "new_message") {
+          const msg = data.message;
+          if (
+            (msg.sender === currentChat && msg.receiver === currentUser) ||
+            (msg.sender === currentUser && msg.receiver === currentChat)
+          ) {
+            setMessages((prev) => [...prev, msg]);
+          }
+        }
+      });
 
-  return unregister;
-}, [currentUser, currentChat, registerHandler, send]);
+    return unregister;
+    }, [currentUser, currentChat, registerHandler, send]);
 
     const sendMessage = () => {
         if (!message.trim() || !currentUser) return;
@@ -107,7 +108,8 @@ useEffect(() => {
     };
 
     return (
-        <div style={{ zIndex: 200 }} className="messenger-chat">
+        <div style={{ zIndex: 200, position: 'relative'}} className="messenger-chat">
+            <ParticlesBackground></ParticlesBackground>
             <div className="chat-messages">
                 {messages.map((msg, index) => (
                     <div key={index} className={msg.sender === currentUser ? "sended" : "received"}>
@@ -124,7 +126,7 @@ useEffect(() => {
                 <div ref={messagesEndRef} />
             </div>
 
-            <div className="message-send" ref={messageSendRef}>
+            <div style={{opacity: currentChat===null ? '0' : '1', transition: '0.2s opacity ease'}} className="message-send" ref={messageSendRef}>
                 <div className="message-input">
                     <div className="bottom-aligned">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#707579" viewBox="0 0 256 256"><path d="M174.92,156c-10.29,17.79-27.39,28-46.92,28s-36.63-10.2-46.93-28a8,8,0,1,1,13.86-8c7.46,12.91,19.2,20,33.07,20s25.61-7.1,33.08-20a8,8,0,1,1,13.84,8ZM232,128a104.35,104.35,0,0,1-4.56,30.56,8,8,0,0,1-2,3.31l-63.57,63.57a7.9,7.9,0,0,1-3.3,2A104,104,0,1,1,232,128Zm-16,0a87.89,87.89,0,1,0-64,84.69L212.69,152A88.05,88.05,0,0,0,216,128ZM92,120a12,12,0,1,0-12-12A12,12,0,0,0,92,120Zm72-24a12,12,0,1,0,12,12A12,12,0,0,0,164,96Z"></path></svg>

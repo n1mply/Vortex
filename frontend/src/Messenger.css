@@ -248,6 +248,7 @@ header {
     }
     .messenger-chat{
         width: 66%;
+
     }
 }
     .header-container {
@@ -258,7 +259,7 @@ header {
     
     .header-content, .chat-header {
         position: relative;
-        width: 33%;
+        width: 32.1%;
         transform: none !important;
         opacity: 1 !important;
         pointer-events: all !important;
@@ -269,6 +270,10 @@ header {
         padding-left: 8px;
         width: 67%;
     }
+    .search-select{
+        width: 33%;
+    }
+
 }
 
 @media (max-width: 1050px) {

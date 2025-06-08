@@ -46,7 +46,7 @@ export default function MessengerHeader({showSearch, setShowSearch, searchQuery,
     const userStatus = chatName ? getUserStatus(chatName) : null;
 
     const getStatusText = () => {
-        if (!userStatus) return 'offline';
+        if (!userStatus) return '';
         
         if (userStatus.status === 'online') {
             return 'online';
@@ -98,7 +98,7 @@ export default function MessengerHeader({showSearch, setShowSearch, searchQuery,
                 </div>
 
                 <div className={`chat-header ${isInChat ? 'chat-header-visible' : ''}`}>
-                    <div className="icon-container">
+                    <div className="icon-container" style={{opacity: !userStatus ? '0' : '1', userSelect: 'none', transition: '0.2s all ease'}}>
                         <img
                             src={back}
                             alt="back"
@@ -106,7 +106,7 @@ export default function MessengerHeader({showSearch, setShowSearch, searchQuery,
                             onClick={relocate}
                         />
                     </div>
-                    <div className="chat-header-info">
+                    <div className="chat-header-info" style={{opacity: !userStatus ? '0' : '1', userSelect: 'none', transition: '0.2s all ease'}}>
                         <div className="avatar">
                             {chatName ? chatName[0] : ' '}
                         </div>
@@ -119,7 +119,7 @@ export default function MessengerHeader({showSearch, setShowSearch, searchQuery,
                             </div>
                         </div>
                     </div>
-                    <div className="icon-container">
+                    <div className="icon-container" style={{opacity: !userStatus ? '0' : '1', userSelect: 'none', transition: '0.2s all ease'}} >
                         <img
                             src={dots}
                             alt="menu"

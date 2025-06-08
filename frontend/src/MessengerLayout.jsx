@@ -168,7 +168,7 @@ export default function MessengerLayout() {
                     </div>
                 )}
             </div>
-            <div className="chat-window" style={{display: 'flex'}}>
+            <div className="chat-window">
                 {windowWidth >= 850 ? (
                 <>
                     <ChatList />
